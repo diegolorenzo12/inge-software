@@ -4,6 +4,9 @@ import { uploadBase64ToS3 } from './utils';
 import { pool } from "./db";
 import { ResultSetHeader } from 'mysql2';
 import cors from 'cors';
+import timezoneMock from 'timezone-mock'
+
+timezoneMock.register('US/Pacific')
 
 const app = express();
 
