@@ -1,0 +1,6 @@
+node_modules
+.serverless
+undefined
+.env
+dist
+.s3-local

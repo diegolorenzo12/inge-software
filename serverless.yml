@@ -1,0 +1,58 @@
+# "org" ensures this Service is used with the correct Serverless Framework Access Key.
+org: lorenzo12
+# "app" enables Serverless Framework Dashboard features and sharing them with other Services.
+app: projecto-ing-software
+# "service" is the name of this project. This will also be added to your AWS resource names.
+service: backend-comedor
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: ${env:REGION}
+  environment:
+    DB_HOST: ${env:DB_HOST}
+    DB_USER: ${env:DB_USER}
+    DB_PASS: ${env:DB_PASS}
+    DB_NAME: ${env:DB_NAME}
+    BUCKET_NAME: ${env:BUCKET_NAME,cf:${self:service}-${sls:stage}.BucketName,'local-bucket'}
+    REGION: ${env:REGION}
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - s3:PutObject       # allow uploads
+            - s3:GetObject       # allow downloads
+            - s3:ListBucket      # allow listing files
+          Resource:
+            - !GetAtt S3Bucket.Arn        # the bucket itself
+            - !Sub '${S3Bucket.Arn}/*'    # all objects in that bucket
+
+plugins:
+  - serverless-s3-local
+  - serverless-offline
+
+custom:
+  s3:
+    host: localhost
+    port: 4566
+    directory: .s3-local
+    buckets:
+      - local-bucket
+
+functions:
+  api:
+    handler: dist/src/handler.handler
+    events:
+      - httpApi: "*"
+
+resources:
+  Resources:
+    # CloudFormation resource for our S3 bucket
+    S3Bucket:
+      Type: AWS::S3::Bucket
+
+  Outputs:
+    BucketName:
+      Description: auto‐generated S3 bucket name
+      Value: !Ref S3Bucket
