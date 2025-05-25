@@ -3,9 +3,11 @@ import express, { Request, Response } from 'express';
 import { uploadBase64ToS3 } from './utils';
 import { pool } from "./db";
 import { ResultSetHeader } from 'mysql2';
+import cors from 'cors';
 
 const app = express();
 
+app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 
 // Health check
