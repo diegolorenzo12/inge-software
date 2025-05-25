@@ -84,7 +84,7 @@ app.post('/api/consumos', async (req: Request, res: Response): Promise<void> => 
 });
 
 // 🔽 GET: Consumos del día actual
-app.get('/api/consumos/dia', async (req: Request, res: Response): Promise<void>  => {
+app.get('/api/consumos/dia', async (req: Request, res: Response): Promise<void> => {
   try {
     const [rows] = await pool.query<any[][]>('CALL GetConsumosDelDia();');
     res.status(200).json({ ConsumosDelDia: rows[0] });
@@ -96,19 +96,20 @@ app.get('/api/consumos/dia', async (req: Request, res: Response): Promise<void> 
 
 
 
-app.get('/api/consumos/dia/:fecha', async (req: Request, res: Response) => {
+app.get('/api/consumos/dia/:fecha', async (req: Request, res: Response): Promise<void> => {
   const fecha = req.params.fecha;
 
   if (!fecha) {
-    return res.status(400).json({ error: 'Parámetro "fecha" requerido (YYYY-MM-DD)' });
+    res.status(400).json({ error: 'Parámetro "fecha" requerido (YYYY-MM-DD)' });
+    return;
   }
 
   try {
     const [rows] = await pool.query<any[][]>('CALL GetConsumosDiaEspecifico(?)', [fecha]);
-    return res.status(200).json({ ConsumosDelDia: rows[0] });
+    res.status(200).json({ ConsumosDelDia: rows[0] });
   } catch (err) {
     console.error('❌ ERROR en /api/consumos/dia/:fecha:', err);
-    return res.status(500).json({ error: 'Error interno del servidor' });
+    res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
 
@@ -118,7 +119,8 @@ app.get('/api/consumos/mes/:fecha', async (req: Request, res: Response): Promise
   const fecha = req.params.fecha;
 
   if (!fecha) {
-    return res.status(400).json({ error: 'Parámetro "fecha" requerido (YYYY-MM-DD)' });
+    res.status(400).json({ error: 'Parámetro "fecha" requerido (YYYY-MM-DD)' });
+    return;
   }
 
   try {
