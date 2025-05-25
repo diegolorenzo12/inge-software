@@ -68,6 +68,7 @@ app.post('/api/consumos', async (req: Request, res: Response): Promise<void> => 
       return;
     }
 
+    await pool.query('SET time_zone = "America/Los_Angeles"');
     await pool.query(
       'INSERT INTO Consumo (empleado_id, tipo_consumo, fecha_hora, precio) VALUES (?, ?, NOW(), ?)',
       [numero_empleado, descripcion, precio]
