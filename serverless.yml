@@ -14,7 +14,7 @@ provider:
     DB_USER: ${env:DB_USER}
     DB_PASS: ${env:DB_PASS}
     DB_NAME: ${env:DB_NAME}
-    BUCKET_NAME: ${env:BUCKET_NAME,cf:${self:service}-${sls:stage}.BucketName,'local-bucket'}
+    BUCKET_NAME:  !Ref S3Bucket
     REGION: ${env:REGION}
   iam:
     role:
@@ -24,6 +24,7 @@ provider:
             - s3:PutObject       # allow uploads
             - s3:GetObject       # allow downloads
             - s3:ListBucket      # allow listing files
+            - s3:DeleteObject
           Resource:
             - !GetAtt S3Bucket.Arn        # the bucket itself
             - !Sub '${S3Bucket.Arn}/*'    # all objects in that bucket
@@ -51,6 +52,25 @@ resources:
     # CloudFormation resource for our S3 bucket
     S3Bucket:
       Type: AWS::S3::Bucket
+      Properties: 
+        PublicAccessBlockConfiguration:
+          BlockPublicAcls:    false
+          IgnorePublicAcls:   false
+          BlockPublicPolicy:  false
+          RestrictPublicBuckets: false
+
+    BucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket: !Ref S3Bucket
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Sid: PublicReadGetObject
+              Effect: Allow
+              Principal: '*'
+              Action: ['s3:GetObject']
+              Resource: !Sub '${S3Bucket.Arn}/*'
 
   Outputs:
     BucketName:

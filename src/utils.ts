@@ -4,7 +4,9 @@ import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 const isOffline = Boolean(process.env.IS_OFFLINE);
 const REGION = process.env.REGION!;
 const S3_PORT = process.env.S3_PORT ?? '4566';
-const BUCKET = process.env.BUCKET_NAME!;
+const BUCKET = isOffline
+    ? 'local-bucket'
+    : process.env.BUCKET_NAME!;
 
 /**
  * Singleton S3 client for both local and AWS environments.
