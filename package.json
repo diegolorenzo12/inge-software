@@ -5,7 +5,7 @@
   "scripts": {
     "build": "tsc",
     "build:watch": "tsc --watch",
-    "deploy": "npm run build && sls deploy --aws-profile anahi",
+    "deploy": "npm run build && sls deploy",
     "offline": "cross-env BUCKET_NAME=local-bucket sls offline start --aws-profile anahi",
     "dev": "concurrently -k -n tsc,offline \"npm run build:watch\" \"nodemon --watch dist --exec \\\"npm run offline\\\"\""
   },
